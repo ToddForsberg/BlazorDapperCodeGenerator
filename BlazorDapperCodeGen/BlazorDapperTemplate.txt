@@ -1,0 +1,363 @@
+================================ Generated Code for copy/paste below.
+
+/startup.cs
+Add the following under ConfigureServices in startup.cs
+
+services.AddScoped<I@@CLASSNAMEService, @@CLASSNAMEService>();
+
+Here are the stored procedure names and SQL statements.
+
+sp@@CLASSNAME_Insert
+@@SQLINSERT
+sp@@CLASSNAME_GetAll
+@@SQLSELECTALL
+sp@@CLASSNAME_GetOne
+@@SQLSELECTONE
+sp@@CLASSNAME_Update
+@@SQLUPDATE
+sp@@CLASSNAME_Delete
+@@SQLDELETE
+
+
+===========================================================================
+/DATA/SqlConnectionConfiguration.cs
+------------------------------------
+namespace @@NAMESPACE.Data
+{
+    // Connection to SQL Server database, used within Data subfolder.
+    // You need to set the connection string in appsettings.json and configure Startup.cs yourself.
+    // In startup.cs add the following with the connectionstring name from appsettings.json inplace of YOURCONNECTIONNAME.
+    //  var sqlConnectionConfiguration = new SqlConnectionConfiguration(Configuration.GetConnectionString("YOURCONNECTIONNAME"));
+    //  services.AddSingleton(sqlConnectionConfiguration);
+    public class SqlConnectionConfiguration
+    {
+        public SqlConnectionConfiguration(string value) => Value = value;
+        public string Value { get; }
+    }
+
+}
+===========================================================================
+
+/DATA/@@CLASSNAME.cs
+--------------------
+using System;
+// This is the model for one row in the database table. You may need to make some adjustments.
+// You can use System.ComponentModel.DataAnnotations if you're familiar.
+namespace @@NAMESPACE.Data
+{
+    public class @@CLASSNAME
+    {
+	@@MODELCODE
+    }
+}
+
+===========================================================================
+
+/DATA/@@CLASSNAMEService.cs
+---------------------------
+using Dapper;
+using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
+
+namespace @@NAMESPACE.Data
+{
+    public class @@CLASSNAMEService : I@@CLASSNAMEService
+    {
+        // Database connection
+        private readonly SqlConnectionConfiguration _configuration;
+        public @@CLASSNAMEService(SqlConnectionConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        // Add (create) a @@CLASSNAME table row (SQL Insert)
+        // This only works if you're already created the stored procedure.
+        public async Task<bool> @@CLASSNAMEInsert(@@CLASSNAME @@objectname)
+        {
+            using (var conn = new SqlConnection(_configuration.Value))
+            {
+                var parameters = new DynamicParameters();
+			@@PARAMETERSADD
+                // Stored procedure method
+                await conn.ExecuteAsync("sp@@CLASSNAME_Insert", parameters, commandType: CommandType.StoredProcedure);
+            }
+            return true;
+        }     
+
+        // Get a list of @@objectname rows (SQL Select)
+        // This only works if you're already created the stored procedure.
+        public async Task<IEnumerable<@@CLASSNAME>> @@CLASSNAMEList()
+        {
+            IEnumerable<@@CLASSNAME> @@objectlist;
+            using (var conn = new SqlConnection(_configuration.Value))
+            {
+                @@objectlist = await conn.QueryAsync<@@CLASSNAME>("sp@@CLASSNAME_GetAll", commandType: CommandType.StoredProcedure);
+            }
+            return @@objectlist;
+        }
+
+        // Get one @@objectname based on its @@CLASSNAMEID (SQL Select)
+        // This only works if you're already created the stored procedure.
+        public async Task<@@CLASSNAME> @@CLASSNAME_GetOne(int id)
+        {
+            @@CLASSNAME @@objectname = new @@CLASSNAME();
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+            using (var conn = new SqlConnection(_configuration.Value))
+            {
+                @@objectname = await conn.QueryFirstOrDefaultAsync<@@CLASSNAME>("sp@@CLASSNAME_GetOne",parameters,commandType: CommandType.StoredProcedure);
+            }
+            return @@objectname;
+        }
+
+        // Update one @@CLASSNAME row based on its @@CLASSNAMEID (SQL Update)
+        // This only works if you're already created the stored procedure.
+        public async Task<bool> @@CLASSNAMEUpdate(@@CLASSNAME @@objectname)
+        {
+            using (var conn = new SqlConnection(_configuration.Value))
+            {
+                var parameters = new DynamicParameters();
+                @@PARAMETERADDUPDATEONLY
+			    @@PARAMETERSADD
+                await conn.ExecuteAsync("sp@@CLASSNAME_Update", parameters, commandType: CommandType.StoredProcedure);
+            }
+            return true;
+        }
+
+        // Physically delete one @@CLASSNAME row based on its @@CLASSNAMEID (SQL Delete)
+        // This only works if you're already created the stored procedure.
+        public async Task<bool> @@CLASSNAMEDelete(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+            using (var conn = new SqlConnection(_configuration.Value))
+            {
+                await conn.ExecuteAsync("sp@@CLASSNAME_Delete",parameters, commandType: CommandType.StoredProcedure);
+            }
+            return true;
+        }
+    }
+}
+
+========================================================================================================
+/Data/I@@CLASSNAMEService.cs
+----------------------------
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace @@NAMESPACE.Data
+{
+    // Each item below provides an interface to a method in @@CLASSNAMEServices.cs
+    public interface I@@CLASSNAMEService
+    {
+        Task<bool> @@CLASSNAMEInsert(@@CLASSNAME @@objectname);
+        Task<IEnumerable<@@CLASSNAME>> @@CLASSNAMEList();
+        Task<@@CLASSNAME> @@CLASSNAME_GetOne(int Id);
+        Task<bool> @@CLASSNAMEUpdate(@@CLASSNAME @@objectname);
+        Task<bool> @@CLASSNAMEDelete(int id);
+    }
+}
+
+========================================================================================================
+/PAGES/@@CLASSNAMEAddEdit.razor
+------------------------------
+@using @@NAMESPACE.Data
+@page "/@@OBJECTNAMEaddedit/{id:int}"
+@inject I@@CLASSNAMEService @@CLASSNAMEService
+@inject NavigationManager NavigationManager
+@*Okay to use DataAnnotationsValidator and ValidationSummary here, if you like. See...
+    https://docs.microsoft.com/en-us/aspnet/core/blazor/forms-validation?view=aspnetcore-3.1*@
+
+<h1>@pagetitle</h1>
+
+<EditForm Model="@@@objectname" OnValidSubmit="@@@CLASSNAMESave">
+    <table class="editform">
+        <!-- You may want to change some type="" choices to better suit your own data -->
+        @@INPUTONEROWS
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <input type="submit" value="@buttontext" />
+                <input type="button" value="Cancel" @onclick="@Cancel" />
+            </td>
+        </tr>
+    </table>
+</EditForm>
+
+@code {
+            // Create a new, empty @@CLASSNAME object
+@@CLASSNAME @@objectname = new @@CLASSNAME();
+
+    [Parameter]
+    public int id { get; set; }
+
+    // Set default page title and button text
+    public string pagetitle = "Add a @@CLASSNAME";
+    public string buttontext = "Add";
+
+    //Executes on page open, set defaults on page.
+    protected override async Task OnInitializedAsync()
+    {
+        // ============ If the passed-in id is zero, assume new @@CLASSNAME.
+        if (id == 0)
+        {
+            // Use this block to set for defaults (optional)
+        }
+        else
+        {
+            @@objectname = await @@CLASSNAMEService.@@CLASSNAME_GetOne(id);
+            // Change page title and button text since this is an edit.
+            pagetitle = "Edit @@CLASSNAME";
+            buttontext = "Update";
+        }
+    }
+    // Executes OnValidSubmit of EditForm above.
+    protected async Task @@CLASSNAMESave()
+    {
+        if (@@objectname.@@PRIMARYKEY == 0)
+        {
+            // Insert if id is zero.
+            await @@CLASSService.@@CLASSNAMEInsert(@@objectname);
+        }
+        else
+        {
+            // Update if id not 0
+            await @@CLASSService.@@CLASSNAMEUpdate(@@objectname);
+        }
+        NavigationManager.NavigateTo("/@@listpagename");
+    }
+    //Executes if user clicks the Cancel button.
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/@@listpagename");
+    }
+}
+
+========================================================================================================
+/PAGES/@@CLASSNAMEList.razor
+----------------------------
+@using @@NAMESPACE.Data
+@page "/@@LISTPAGENAME"
+@inject I@@CLASSNAMEService @@CLASSNAMEService
+
+<h3>@@CLASSNAME List</h3>
+<p style="text-align:center">
+    <!-- Calling @@objectnameaddedit with id of zero configures page for Insert -->
+    <a href="/@@OBJECTNAMEaddedit/0"><span class="oi oi-plus"></span>Add a @@CLASSNAME</a>
+</p>
+@if (@@objectlist == null)
+{
+    <p style="text-align:center">
+        <img src="../images/loader.gif" />
+    </p>
+}
+else
+{
+    <table>
+        <tr>
+            <th>Edit</th>
+		@@FIELDNAMESTABLEHEADING
+            <th>Delete</th>
+        </tr>
+        @foreach (var @@objectname in @@objectlist)
+        {
+    <tr>
+        <td>
+            <!-- Calling @@objectnameaddedit with id configures page for Update of that table row -->
+            <a href="@@objectnameaddedit/@@@objectname.@@PRIMARYKEY">
+                <span class="oi oi-pencil" style="color:blue;"></span>
+                <!-- If you prefer images, comment below and put images in wwwroot/images folder 
+                <img src="../images/iEdit.png" />-->
+            </a>
+        </td>
+		@@FIELDNAMESTABLEROW
+        <td>
+            <!-- Provide your own images in wwwroot/images folder -->
+            @*Show a green check for active @@objectname...*@
+            @if (@@objectname.IsActive)
+            {
+            <span class="oi oi-check" style="color:green;"></span>
+            <!-- If you prefer images, comment below and put images in wwwroot/images folder 
+                <img src="../images/iGreenCheck.png" /> -->
+            }
+            @* ...a red X otherwise *@
+            else
+            {
+           <span class="oi oi-x" style="color:red;"></span>
+            <!-- If you prefer images, comment below and put images in wwwroot/images folder 
+                <img src="../images/iRedX.png" />-->
+            }
+        </td>
+        @* This column required only for physical deletes *@
+        
+        <td>
+            <a href="@@objectnamedelete/@@@objectname.@@PRIMARYKEY">
+            <span class="oi oi-trash" style="color:red;"></span>
+            <!-- If you prefer images, uncomment the img tag and put images in wwwroot/images
+                <img src="../images/iTrash.png" alt="Delete" title="Delete" /> -->
+            </a>
+        </td>
+    </tr>
+        }
+    </table>
+}
+
+@code {
+    // Create an empty list, named @@objectlist, of empty @@CLASSNAME objects.
+    IEnumerable<@@CLASSNAME> @@objectlist;
+    protected override async Task OnInitializedAsync()
+    {
+        //Populate the list of @@objectname objects from the @@CLASSNAME table.
+        @@objectlist = await @@CLASSNAMEService.@@CLASSNAMEList();
+    }
+}
+========================================================================================================
+/Pages/@@CLASSNAMEDelete.razor
+----------------------------
+@using @@NAMESPACE.Data
+@page "/@@OBJECTNAMEdelete/{id:int}"
+@inject I@@CLASSNAMEService @@CLASSService
+@inject NavigationManager NavigationManager
+
+
+<h1>Delete a @@CLASSNAME</h1>
+<p style="color:red;text-align:center">Are you sure you want to permanently delete this @@objectname? There is no undo!</p>
+
+<table class="editform">
+	@@CONFIRMDELETEROWS
+    <tr>
+        <td colspan="2" style="text-align:center">
+            <input type="button" value="Delete" @onclick="@Delete" />
+            <input type="button" value="Cancel" @onclick="@Cancel" />
+        </td>
+    </tr>
+</table>
+
+@code {
+    // Create a new, empty @@CLASSNAME object
+    @@CLASSNAME @@objectname = new @@CLASSNAME();
+
+    [Parameter]
+    public int id { get; set; }
+    //The id parameter is accessible as id in code below, and @id in HTML.
+
+    //Executes on page open..
+    protected override async Task OnInitializedAsync()
+    {
+        @@objectname = await @@CLASSNAMEService.@@CLASSNAME_GetOne(id);
+    }
+    //Executes if user confirms the deletion.
+    protected async Task Delete()
+    {
+        // Delete the row and go back to the list.
+        await @@CLASSNAMEService.@@CLASSNAMEDelete(id);
+        NavigationManager.NavigateTo("/@@listpagename");
+    }
+    // Executes when user clicks the Cancel button.
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/@@listpagename");
+    }
+}
+
