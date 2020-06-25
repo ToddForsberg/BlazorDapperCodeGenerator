@@ -52,6 +52,25 @@ namespace @@NAMESPACE.Data
 }
 
 ===========================================================================
+/Data/I@@CLASSNAMEService.cs
+----------------------------
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace @@NAMESPACE.Data
+{
+    // Each item below provides an interface to a method in @@CLASSNAMEServices.cs
+    public interface I@@CLASSNAMEService
+    {
+        Task<bool> @@CLASSNAMEInsert(@@CLASSNAME @@objectname);
+        Task<IEnumerable<@@CLASSNAME>> @@CLASSNAMEList();
+        Task<@@CLASSNAME> @@CLASSNAME_GetOne(int Id);
+        Task<bool> @@CLASSNAMEUpdate(@@CLASSNAME @@objectname);
+        Task<bool> @@CLASSNAMEDelete(int id);
+    }
+}
+
+========================================================================================================
 
 /DATA/@@CLASSNAMEService.cs
 ---------------------------
@@ -80,8 +99,12 @@ namespace @@NAMESPACE.Data
             {
                 var parameters = new DynamicParameters();
 			@@PARAMETERSADD
+
                 // Stored procedure method
                 await conn.ExecuteAsync("sp@@CLASSNAME_Insert", parameters, commandType: CommandType.StoredProcedure);
+
+                // Embedded SQL Method
+                // @@SQLINSERT
             }
             return true;
         }     
@@ -94,6 +117,9 @@ namespace @@NAMESPACE.Data
             using (var conn = new SqlConnection(_configuration.Value))
             {
                 @@objectlist = await conn.QueryAsync<@@CLASSNAME>("sp@@CLASSNAME_GetAll", commandType: CommandType.StoredProcedure);
+
+                // Embedded SQL Method //
+                // @@SQLSELECTALL
             }
             return @@objectlist;
         }
@@ -138,25 +164,6 @@ namespace @@NAMESPACE.Data
             }
             return true;
         }
-    }
-}
-
-========================================================================================================
-/Data/I@@CLASSNAMEService.cs
-----------------------------
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace @@NAMESPACE.Data
-{
-    // Each item below provides an interface to a method in @@CLASSNAMEServices.cs
-    public interface I@@CLASSNAMEService
-    {
-        Task<bool> @@CLASSNAMEInsert(@@CLASSNAME @@objectname);
-        Task<IEnumerable<@@CLASSNAME>> @@CLASSNAMEList();
-        Task<@@CLASSNAME> @@CLASSNAME_GetOne(int Id);
-        Task<bool> @@CLASSNAMEUpdate(@@CLASSNAME @@objectname);
-        Task<bool> @@CLASSNAMEDelete(int id);
     }
 }
 
